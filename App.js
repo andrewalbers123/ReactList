@@ -1,9 +1,65 @@
 import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Keyboard, StyleSheet, Text, View, ScrollView, Animated } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler/Swipeable'; 
+import { Keyboard, StyleSheet, Text, View, SafeAreaView, ScrollView, FlatList, Animated } from 'react-native';
 import TaskInputField from './components/TaskInputField';
 import TaskItem from './components/TaskItem';
+
+// const DATA = [
+//   {
+//     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+//     title: 'First Item',
+//   },
+//   {
+//     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+//     title: 'Second Item',
+//   },
+//   {
+//     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+//     title: 'Third Item',
+//   },
+// ];
+
+const DATA = [
+ {
+  id: 0,
+  tag: "recurring",
+  summary: "Go for a run",
+  detail: "Go for a run you fat fuck",
+  time_estimated: 45*60, // in seconds
+  priority: 0,
+  },
+   {
+  id: 1,
+  tag: "",
+  summary: "Fix ongoing alerts",
+  detail: "Stupid alerts going off, fix it bro",
+  time_estimated: 60*60, // in seconds
+  priority: 1,
+  },
+   {
+  id: 2,
+  tag: "",
+  summary: "Take a shit",
+  detail: "Empty your bowl booboo",
+  time_estimated: 120*60, // in seconds
+  priority: 1,
+  },
+]
+
+
+const Item = ({ id, tag, summary, detail, time_estimated, priority }) => (
+  <View style={styles.itemContainer}>
+    <View style={styles.indexContainer}>
+      <Text style={styles.index}>{id+1}</Text>
+    </View>
+    <View style={styles.taskContainer}>
+      <Text style={styles.task}>{summary}</Text>
+    </View>
+    <View style={styles.timeContainer}>
+      <Text style={styles.time_estimated}>{time_estimated}</Text>
+    </View>
+  </View>
+)
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -11,51 +67,49 @@ export default function App() {
   const addTask = (task) => {
     if (task == null) return;
     setTasks([...tasks, task]);
+    // console.log(tasks)
     Keyboard.dismiss();
   }
+
+  const renderDummy = ({ item }) => (
+    <Item id={item.id} 
+    tag={item.tag} 
+    summary={item.summary} 
+    detail={item.detail} 
+    time_estimated={item.time_estimated} 
+    priority={item.priority} 
+    deleteTask={() => deleteTask(index)}
+    />
+  )
+
+  const renderItem = ({ task, index }) => (
+    <TaskItem index={index + 1} task={task} deleteTask={() => deleteTask(index)}/>
+  )
 
   const deleteTask = (deleteIndex) => {
     setTasks(tasks.filter((value, index) => index != deleteIndex));
   }
 
-  // const renderRightActions = (
-  //   progress: Animated.AnimatedInterpolation,
-  //   dragAnimatedValue: Animated.AnimatedInterpolation,
-  // ) => {
-  //   const opacity = dragAnimatedValue.interpolate({
-  //     inputRange: [-150,  0],
-  //     outputRange: [1, 0],
-  //     extrapolate: 'clamp',
-  //   });
-  //   return (
-  //     <View style={styles.swipedRow}>
-  //       <View style={styles.swipedConfirmationContaienr}>
-  //         <Text style={styles.deleteConfirmationText}>Are you sure?</Text>
-  //       </View>
-  //     </View>
-  //   )
-  // } 
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.heading}>To-Do List</Text>
+          {
+            tasks.map((task, index) => {
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>To-Do List</Text>
-      <ScrollView style={styles.scrollView}>
-        {
-          tasks.map((task, index) => {
-          return (
-            <Swipeable renderRightActions={renderRightActions}>
-              <View key={index} style={styles.taskContainer}>
-                <TaskItem index={index + 1} task={task} deleteTask={() => deleteTask(index)}/>
-              </View>
-            </Swipeable>
-
-          );
-          })
-        }
-      </ScrollView>
-      <TaskInputField addTask={addTask}/>
-    </View>
-  );
+              return (
+                <View key={index} style={styles.taskContainer}>
+                  <FlatList
+                  data={DATA}
+                  renderItem={renderDummy}
+                  keyExtractor={item => item.id}
+                  />
+                </View>
+              )
+            })
+          }
+        <TaskInputField addTask={addTask}/>
+      </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -64,6 +118,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E1A3C',
     // alignItems: 'center',
     // justifyContent: 'center',
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
   },
   heading: {
     color: "#fff",
@@ -75,5 +133,39 @@ const styles = StyleSheet.create({
   },
   taskContainer: {
     marginTop: 20,
-  }
+  },
+  indexContainer: {
+    backgroundColor: '#3E3364',
+    borderRadius: 12,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 50,
+    height: 50,
+  },
+  timeContainer: {
+    marginTop: 20,
+    alignItems: 'flex-end',
+  },
+  index: {
+    color: '#fff',
+    fontSize: 20,
+  },
+  task: {
+    color: '#fff',
+    width: '90%',
+    fontSize: 16,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8, 
+    marginHorizontal: 16,
+  },
+  time_estimated: {
+    color: '#fff'
+  },
+  title: {
+    fontSize: 32,
+  },
 });

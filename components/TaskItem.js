@@ -6,10 +6,10 @@ export default TaskItem = (props) => {
     return (
         <View style={styles.container}>
             <View style={styles.indexContainer}>
-                <Text style={styles.index}>{props.index}</Text>
+                <Text style={styles.index}>{props.id}</Text>
             </View>
             <View style={styles.taskContainer}>
-                <Text style={styles.task}>{props.task}</Text>
+                <Text style={styles.task}>{props.summary}</Text>
                 <TouchableOpacity onPress={() => props.deleteTask()}>
                     <MaterialIcons style={styles.delete} name="delete" size={18} color='#fff'/>
                 </TouchableOpacity>
