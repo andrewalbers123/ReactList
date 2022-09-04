@@ -46,7 +46,6 @@ const DATA = [
   },
 ]
 
-
 const Item = ({ id, tag, summary, detail, time_estimated, priority }) => (
   <View style={styles.itemContainer}>
     <View style={styles.indexContainer}>
@@ -62,12 +61,11 @@ const Item = ({ id, tag, summary, detail, time_estimated, priority }) => (
 )
 
 export default function App() {
-  const [tasks, setTasks] = useState([]);
+  // const [DATA, setTasks] = useState([]);
 
   const addTask = (task) => {
     if (task == null) return;
-    setTasks([...tasks, task]);
-    // console.log(tasks)
+    setTasks([...DATA, task]);
     Keyboard.dismiss();
   }
 
@@ -87,26 +85,19 @@ export default function App() {
   )
 
   const deleteTask = (deleteIndex) => {
-    setTasks(tasks.filter((value, index) => index != deleteIndex));
+    setTasks(DATA.filter((value, index) => index != deleteIndex));
   }
 
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.heading}>To-Do List</Text>
-          {
-            tasks.map((task, index) => {
-
-              return (
-                <View key={index} style={styles.taskContainer}>
-                  <FlatList
-                  data={DATA}
-                  renderItem={renderDummy}
-                  keyExtractor={item => item.id}
-                  />
-                </View>
-              )
-            })
-          }
+        <View style={styles.taskContainer}>
+          <FlatList
+          data={DATA}
+          renderItem={renderDummy}
+          keyExtractor={item => item.id}
+          />
+        </View>
         <TaskInputField addTask={addTask}/>
       </SafeAreaView>
     );
@@ -116,8 +107,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E1A3C',
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   itemContainer: {
     flexDirection: 'row',
