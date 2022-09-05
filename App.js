@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Keyboard, StyleSheet, Text, View, SafeAreaView, ScrollView, FlatList, Animated } from 'react-native';
+import { Keyboard, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, FlatList, Animated } from 'react-native';
 import TaskInputField from './components/TaskInputField';
 import TaskItem from './components/TaskItem';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // const DATA = [
 //   {
@@ -46,58 +47,62 @@ const DATA = [
   },
 ]
 
-const Item = ({ id, tag, summary, detail, time_estimated, priority }) => (
-  <View style={styles.itemContainer}>
+const Item = ({ id, tag, summary, detail, time_estimated, priority, deleteTask }) => (
+  // console.log(id),
+  <View style={styles.container_2}>
     <View style={styles.indexContainer}>
       <Text style={styles.index}>{id+1}</Text>
     </View>
     <View style={styles.taskContainer}>
       <Text style={styles.task}>{summary}</Text>
-    </View>
-    <View style={styles.timeContainer}>
       <Text style={styles.time_estimated}>{time_estimated}</Text>
+      <TouchableOpacity onPress={() => deleteTask()}>
+        <MaterialIcons style={styles.delete} name="delete" size={18} color='#fff'/>
+      </TouchableOpacity>
     </View>
   </View>
 )
 
 export default function App() {
-  // const [DATA, setTasks] = useState([]);
-
+  const [tasks, setTasks] = useState(DATA);
+  
   const addTask = (task) => {
     if (task == null) return;
-    setTasks([...DATA, task]);
+    setTasks([...tasks, task]);
     Keyboard.dismiss();
   }
 
   const renderDummy = ({ item }) => (
+    console.log(item.id),
     <Item id={item.id} 
     tag={item.tag} 
     summary={item.summary} 
     detail={item.detail} 
     time_estimated={item.time_estimated} 
     priority={item.priority} 
-    deleteTask={() => deleteTask(index)}
+    deleteTask={() => deleteTask(item.id)}
     />
-  )
+  );
 
   const renderItem = ({ task, index }) => (
     <TaskItem index={index + 1} task={task} deleteTask={() => deleteTask(index)}/>
-  )
+  );
 
   const deleteTask = (deleteIndex) => {
-    setTasks(DATA.filter((value, index) => index != deleteIndex));
+    setTasks(tasks.filter((value, id) => id != deleteIndex));
   }
 
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.heading}>To-Do List</Text>
-        <View style={styles.taskContainer}>
-          <FlatList
-          data={DATA}
-          renderItem={renderDummy}
-          keyExtractor={item => item.id}
-          />
-        </View>
+                <View style={styles.taskContainer}>
+                  <FlatList
+                  {...console.log(tasks)}
+                  data={tasks}
+                  renderItem={renderDummy}
+                  keyExtractor={item => item.id}
+                  />
+                </View>
         <TaskInputField addTask={addTask}/>
       </SafeAreaView>
     );
@@ -107,6 +112,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E1A3C',
+  },
+  container_2: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
   },
   itemContainer: {
     flexDirection: 'row',
@@ -121,14 +130,22 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   taskContainer: {
-    marginTop: 20,
-  },
+    backgroundColor: '#3E3364',
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    minHeight: 50,
+},
   indexContainer: {
     backgroundColor: '#3E3364',
     borderRadius: 12,
     marginRight: 10,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center', 
     width: 50,
     height: 50,
   },
@@ -156,5 +173,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
+  },
+  delete: {
+    marginLeft: 10,
   },
 });
