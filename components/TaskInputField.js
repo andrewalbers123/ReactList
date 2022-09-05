@@ -5,19 +5,28 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default TaskInputField = (props) => {
     const [task, setTask] = useState();
+    const [summary, setSummary] = useState();
+    const [time, setTime] = useState();
 
     const handleAddTask = (value) => {
         props.addTask(value);
         setTask(null);
     }
 
+    const handleBuildTask = ({summary, time}) => {
+        props.buildTask({summary, time})
+        setSummary(null);
+        setTime(null);
+    }
+
     return (
         <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "android" ? "padding" : "height"}
         style={styles.container}
       >
-        <TextInput style={styles.inputField} value={task} onChangeText={text => setTask(text)} placeholder={'Write a task'} placeholderTextColor={'#fff'}/>
-        <TouchableOpacity onPress={() => handleAddTask(task)}>
+        <TextInput style={styles.inputField} value={summary} onChangeText={text => setSummary(text)} placeholder={'Write a task'} placeholderTextColor={'#fff'}/>
+        <TextInput keyboardType='numeric' style={styles.numericField} value={time} onChangeText={time => setTime(time)} placeholder={'est. time'} placeholderTextColor={'#fff'}/>
+        <TouchableOpacity onPress={() => handleBuildTask({summary, time})}>
           <View style={styles.button}>
               <MaterialIcons name="keyboard-arrow-up" size={24} color="black" />
           </View>

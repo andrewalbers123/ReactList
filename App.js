@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Keyboard, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, ScrollView, FlatList, Animated } from 'react-native';
+import CountDown from 'react-native-countdown-component';
 import TaskInputField from './components/TaskInputField';
 import TaskItem from './components/TaskItem';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -53,23 +54,47 @@ const Item = ({ id, tag, summary, detail, time_estimated, priority, deleteTask }
     <View style={styles.indexContainer}>
       <Text style={styles.index}>{id+1}</Text>
     </View>
-    <View style={styles.taskContainer}>
+    <TouchableOpacity style={styles.taskContainer} onPress={() => alert(detail)}>
       <Text style={styles.task}>{summary}</Text>
-      <Text style={styles.time_estimated}>{time_estimated}</Text>
-      <TouchableOpacity onPress={() => deleteTask()}>
+      <CountDown until={time_estimated} 
+      size={14} 
+      onFinish={() => alert('task time up')} 
+      digitStyle={{backgroundColor: '#fff'}} 
+      digitTxtStyle={{color: 'black'}} 
+      timeToShow={['M', 'S']}
+      timeLabels={{m: null, s: null}}
+      />
+      {/* <Text style={styles.time_estimated}>{time_estimated}</Text> */}
+      {/* <TouchableOpacity onPress={() => deleteTask()}>
         <MaterialIcons style={styles.delete} name="delete" size={18} color='#fff'/>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </TouchableOpacity>
   </View>
 )
 
 export default function App() {
   const [tasks, setTasks] = useState(DATA);
-  
+  // const [summary, setSummary] = useState();
+  // const [time, setTime] = useState();
+
   const addTask = (task) => {
     if (task == null) return;
     setTasks([...tasks, task]);
     Keyboard.dismiss();
+  }
+
+  const buildTask = ({summary, time}) => {
+    if (summary == null) return;
+    const new_task = {
+      id: tasks.length,
+      tag: "",
+      summary: summary,
+      detail: "",
+      time_estimated: time,
+      priority: ""
+    };
+    setTasks([...tasks, new_task]);
+    Keyboard.dismiss
   }
 
   const renderDummy = ({ item }) => (
@@ -103,7 +128,7 @@ export default function App() {
                   keyExtractor={item => item.id}
                   />
                 </View>
-        <TaskInputField addTask={addTask}/>
+        <TaskInputField buildTask={buildTask}/>
       </SafeAreaView>
     );
 }
@@ -115,7 +140,9 @@ const styles = StyleSheet.create({
   },
   container_2: {
     flexDirection: 'row',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
   },
   itemContainer: {
     flexDirection: 'row',
@@ -133,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3E3364',
     borderRadius: 12,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'flex-start',
     flex: 1,
     paddingHorizontal: 10,
@@ -143,15 +170,15 @@ const styles = StyleSheet.create({
   indexContainer: {
     backgroundColor: '#3E3364',
     borderRadius: 12,
-    marginRight: 10,
-    alignItems: 'center',
+    marginRight: 12,
+    alignItems: 'flex-start',
     justifyContent: 'center', 
     width: 50,
     height: 50,
   },
   timeContainer: {
     marginTop: 20,
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
   },
   index: {
     color: '#fff',
